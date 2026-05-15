@@ -1,5 +1,6 @@
 package com.webmars.webmars_api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import  java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
