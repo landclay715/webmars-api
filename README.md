@@ -102,6 +102,8 @@ JWT_SECRET=$(openssl rand -base64 48)
 export $(grep -v '^#' .env | xargs)
 ```
 
+> **PowerShell note:** `DB_PASSWORD` must not contain special characters like `$` when setting env vars in PowerShell. Use single quotes: `$env:DB_PASSWORD='yourpassword'` not double quotes.
+
 **5. Build**
 
 ```bash
@@ -213,6 +215,22 @@ Set all variables from the [Environment Variables](#environment-variables) table
 - **Never commit secrets to git.** `.env` is in `.gitignore`. Use environment variables in all deployed environments.
 - **Generate JWT_SECRET with:** `openssl rand -base64 48` — this produces a 48-byte secret well above the 32-byte minimum.
 - **Private and foreign-owned resources return `404`, not `403`.** This prevents resource enumeration — an attacker cannot distinguish "does not exist" from "exists but you can't see it."
+
+---
+
+## Known Issues and Troubleshooting
+
+### Flyway not running on Spring Boot 4
+
+Spring Boot 4 changed Flyway autoconfiguration. If Flyway migrations are not running, the app requires an explicit `FlywayConfig` bean rather than relying on autoconfiguration. This is already implemented in `FlywayConfig.java`.
+
+### PostgreSQL password reset
+
+If you are locked out of PostgreSQL, edit `C:\Program Files\PostgreSQL\18\data\pg_hba.conf` and change the IPv4 line from `scram-sha-256` to `trust`. Restart the PostgreSQL service, connect without a password, run `ALTER USER postgres WITH PASSWORD 'newpassword'`, then revert `pg_hba.conf` back to `scram-sha-256` and restart the service again.
+
+### PowerShell environment variables with special characters
+
+Passwords containing `$` or other special characters must be set using single quotes in PowerShell to prevent variable interpolation: `$env:DB_PASSWORD='yourpassword'`
 
 ---
 
