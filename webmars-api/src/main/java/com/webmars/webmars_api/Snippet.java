@@ -22,7 +22,7 @@ public class Snippet {
     @JoinColumn(name = "owner_id")
     @JsonIgnoreProperties({"password", "createdAt", "hibernateLazyInitializer", "handler"})
     private User owner;
-   
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
