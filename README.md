@@ -7,15 +7,16 @@ REST backend for the [WebMARS MIPS Assembly Simulator](https://webmarsimulator.c
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Tech Stack](#tech-stack)
-3. [Environment Variables](#environment-variables)
-4. [Local Setup](#local-setup)
-5. [API Endpoints](#api-endpoints)
-6. [Authentication](#authentication)
-7. [Database Schema](#database-schema)
-8. [Deployment on Render](#deployment-on-render)
-9. [Security Notes](#security-notes)
-10. [Team](#team)
+2. [V1.2 Features](#v12-features)
+3. [Tech Stack](#tech-stack)
+4. [Environment Variables](#environment-variables)
+5. [Local Setup](#local-setup)
+6. [API Endpoints](#api-endpoints)
+7. [Authentication](#authentication)
+8. [Database Schema](#database-schema)
+9. [Deployment on Render](#deployment-on-render)
+10. [Security Notes](#security-notes)
+11. [Team](#team)
 
 ---
 
@@ -28,6 +29,15 @@ WebMARS API is a Spring Boot REST backend that powers [webmarsimulator.com](http
 - **Run logging** — record simulation runs and surface usage stats per user
 
 Built with Java 21, Spring Boot 4.0.6, PostgreSQL 18, and stateless JWT authentication.
+
+---
+
+## V1.2 Features
+
+- **Snippet ownership** — snippets are owned by the user who created them. The server sets the owner automatically from the JWT token — clients cannot fake ownership.
+- **Visibility** — snippets can be `PUBLIC` or `PRIVATE`. Private snippets return `404` to non-owners to prevent enumeration attacks.
+- **Paginated public feed** — `GET /snippets/public` returns a paginated list of public snippets without requiring authentication.
+- **Ownership-protected delete** — `DELETE /snippets/{id}` returns `404` to non-owners rather than `403`, preventing attackers from confirming whether a snippet exists.
 
 ---
 
