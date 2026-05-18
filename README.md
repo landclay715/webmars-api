@@ -38,6 +38,7 @@ Built with Java 21, Spring Boot 4.0.6, PostgreSQL 18, and stateless JWT authenti
 - **Visibility** — snippets can be `PUBLIC` or `PRIVATE`. Private snippets return `404` to non-owners to prevent enumeration attacks.
 - **Paginated public feed** — `GET /snippets/public` returns a paginated list of public snippets without requiring authentication.
 - **Ownership-protected delete** — `DELETE /snippets/{id}` returns `404` to non-owners rather than `403`, preventing attackers from confirming whether a snippet exists.
+- **Run history** — every simulation run is logged with duration, instruction count, and exit status (`COMPLETED`, `ERROR`, `PAUSED`, `ABORTED`). Users can view their recent runs and a leaderboard of their most-run snippets.
 
 ---
 
@@ -241,6 +242,14 @@ If you are locked out of PostgreSQL, edit `C:\Program Files\PostgreSQL\18\data\p
 ### PowerShell environment variables with special characters
 
 Passwords containing `$` or other special characters must be set using single quotes in PowerShell to prevent variable interpolation: `$env:DB_PASSWORD='yourpassword'`
+
+### Flyway checksum mismatch
+
+If you manually create a table and insert it into `flyway_schema_history` with checksum `0`, Flyway will fail on next boot with a checksum mismatch error. Fix it by running:
+
+```sql
+UPDATE flyway_schema_history SET checksum = <value from error log> WHERE version = '<version>';
+```
 
 ---
 
