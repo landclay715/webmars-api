@@ -39,6 +39,7 @@ Built with Java 21, Spring Boot 4.0.6, PostgreSQL 18, and stateless JWT authenti
 - **Paginated public feed** — `GET /snippets/public` returns a paginated list of public snippets without requiring authentication.
 - **Ownership-protected delete** — `DELETE /snippets/{id}` returns `404` to non-owners rather than `403`, preventing attackers from confirming whether a snippet exists.
 - **Run history** — every simulation run is logged with duration, instruction count, and exit status (`COMPLETED`, `ERROR`, `PAUSED`, `ABORTED`). Users can view their recent runs and a leaderboard of their most-run snippets.
+- **Rate limiting** — brute force protection on login (5 attempts per 15 minutes) and registration (10 attempts per hour) endpoints. Returns `429 Too Many Requests` when exceeded.
 
 ---
 
@@ -226,6 +227,15 @@ Set all variables from the [Environment Variables](#environment-variables) table
 - **Never commit secrets to git.** `.env` is in `.gitignore`. Use environment variables in all deployed environments.
 - **Generate JWT_SECRET with:** `openssl rand -base64 48` — this produces a 48-byte secret well above the 32-byte minimum.
 - **Private and foreign-owned resources return `404`, not `403`.** This prevents resource enumeration — an attacker cannot distinguish "does not exist" from "exists but you can't see it."
+
+### Rate Limiting
+
+Rate limiting is applied to authentication endpoints to prevent brute force attacks and abuse:
+
+- `POST /auth/login` — limited to 5 attempts per IP per 15 minutes. Exceeding this returns `429 Too Many Requests`.
+- `POST /auth/register` — limited to 10 attempts per IP per hour. Exceeding this returns `429 Too Many Requests`.
+
+Implemented using an in-memory `ConcurrentHashMap` with sliding window timestamp tracking. Note: this is a single-server solution. For multi-server deployments, use Redis-backed rate limiting instead.
 
 ---
 
