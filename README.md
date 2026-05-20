@@ -40,6 +40,7 @@ Built with Java 21, Spring Boot 4.0.6, PostgreSQL 18, and stateless JWT authenti
 - **Ownership-protected delete** — `DELETE /snippets/{id}` returns `404` to non-owners rather than `403`, preventing attackers from confirming whether a snippet exists.
 - **Run history** — every simulation run is logged with duration, instruction count, and exit status (`COMPLETED`, `ERROR`, `PAUSED`, `ABORTED`). Users can view their recent runs and a leaderboard of their most-run snippets.
 - **Rate limiting** — brute force protection on login (5 attempts per 15 minutes) and registration (10 attempts per hour) endpoints. Returns `429 Too Many Requests` when exceeded.
+- **Error handling polish** — every exception type returns structured JSON. No stack traces are ever exposed to clients. Consistent error messaging prevents user enumeration attacks.
 
 ---
 
@@ -70,6 +71,7 @@ All configuration is injected via environment variables. Never hard-code secrets
 | `JWT_SECRET` | *(required)* | HMAC signing secret, minimum 32 bytes. Generate with: `openssl rand -base64 48` |
 | `JPA_DDL` | `update` | Hibernate DDL mode. Use `validate` in production |
 | `JPA_SHOW_SQL` | `false` | Log SQL queries to stdout |
+| `spring.jpa.open-in-view` | `false` | Disables open session in view pattern for better database connection efficiency in REST APIs |
 
 ---
 
@@ -236,6 +238,15 @@ Rate limiting is applied to authentication endpoints to prevent brute force atta
 - `POST /auth/register` — limited to 10 attempts per IP per hour. Exceeding this returns `429 Too Many Requests`.
 
 Implemented using an in-memory `ConcurrentHashMap` with sliding window timestamp tracking. Note: this is a single-server solution. For multi-server deployments, use Redis-backed rate limiting instead.
+
+### Structured Error Responses
+
+All API errors return structured JSON responses. The `GlobalExceptionHandler` maps every exception type to a clean JSON error:
+
+- **Validation failures (400)** — returns field-level error map showing exactly which field failed and why
+- **Duplicate records (409)** — returns clean conflict message instead of database stack trace
+- **Auth failures (401)** — returns consistent `"Invalid credentials"` message regardless of whether username or password was wrong
+- **Unexpected errors (500)** — returns generic message without leaking internal details or stack traces
 
 ---
 
