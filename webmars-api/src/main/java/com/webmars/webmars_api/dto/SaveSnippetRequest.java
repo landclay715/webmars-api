@@ -10,6 +10,7 @@ public record SaveSnippetRequest(
     String title,
 
     @NotBlank(message = "Code is required")
+    @Size(max = 65536, message = "Code must be under 65536 characters")
     String code,
 
     Snippet.Visibility visibility
