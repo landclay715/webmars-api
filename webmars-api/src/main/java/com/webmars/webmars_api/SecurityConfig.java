@@ -27,7 +27,7 @@ public class SecurityConfig {
     public SecurityConfig(JwtFilter jwtFilter) {
 
         this.jwtFilter = jwtFilter;
-        System.out.println("SecurityConfig loaded");
+
     }
 
     @Bean
@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/snippets/public").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/snippets/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/snippets/{id}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
