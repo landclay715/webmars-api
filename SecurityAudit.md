@@ -41,7 +41,7 @@ Any developer who clones the repo, any CI/CD system with repo access, or any att
 
 **Fix:**  
 - Add `.env` to `.gitignore` immediately.
-- Rotate `webmars123` if it has ever been pushed.
+- Rotate `---------` if it has ever been pushed.
 - Use a secrets manager (AWS Secrets Manager, Vault, etc.) or environment-injected variables in CI/CD — never commit `.env` files containing real secrets.
 
 ---
