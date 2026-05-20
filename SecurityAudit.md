@@ -29,10 +29,10 @@ The API has a solid foundation: BCrypt password hashing, JJWT 0.12.x with algori
 ### C1 — Plaintext Credential Committed to Repository
 
 **File:** `.env:1`  
-**Line:** `DB_PASSWORD=webmars123`
+**Line:** `DB_PASSWORD=--------`
 
 **Description:**  
-The `.env` file contains a real database password (`webmars123`) and is present in the project directory. If this file is tracked by git (check with `git ls-files .env`), the credential is permanently in git history even after deletion. The `.env.example` file exists as a template, but the actual `.env` with a real value is present alongside it.
+The `.env` file contains a real database password (`---------`) and is present in the project directory. If this file is tracked by git (check with `git ls-files .env`), the credential is permanently in git history even after deletion. The `.env.example` file exists as a template, but the actual `.env` with a real value is present alongside it.
 
 The `JWT_SECRET=paste-your-token-here` value is a placeholder (21 bytes), which means `JwtUtil` would throw `IllegalStateException` on startup if used as-is — so that value is not the actual production secret. But the DB password appears to be a real credential.
 
