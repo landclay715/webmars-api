@@ -36,10 +36,13 @@ public class SnippetController {
     }
 
     @GetMapping("/mine")
-    public List<Snippet> mine(@AuthenticationPrincipal String username){
+    public Page<Snippet> mine(
+            @AuthenticationPrincipal String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
         User me = users.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException((HttpStatus.UNAUTHORIZED)));
-        return snippets.findByOwnerIdOrderByUpdatedAtDesc(me.getId());
+        return snippets.findByOwnerIdOrderByUpdatedAtDesc(me.getId(), PageRequest.of(page, Math.min(size, 100)));
     }
 
     @GetMapping("/public")

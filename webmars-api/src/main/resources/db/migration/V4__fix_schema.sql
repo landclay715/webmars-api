@@ -1,0 +1,1 @@
+ALTER TABLE snippets ALTER COLUMN code TYPE TEXT;
