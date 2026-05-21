@@ -12,4 +12,5 @@ ENTRYPOINT ["java", \
   "-Dspring.datasource.username=landon", \
   "-Dspring.datasource.password=VRuWY0ZlYOWuUj8a5yZNxDjIPDATvl2r", \
   "-Dspring.jpa.hibernate.ddl-auto=validate", \
+  "-Dserver.port=8080", \
   "-jar", "app.jar"]
