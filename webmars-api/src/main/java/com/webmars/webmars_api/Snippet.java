@@ -20,7 +20,7 @@ public class Snippet {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    @JsonIgnoreProperties({"password", "createdAt", "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"id", "password", "createdAt", "hibernateLazyInitializer", "handler"})
     private User owner;
 
 
