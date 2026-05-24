@@ -14,7 +14,7 @@ REST backend for the [WebMARS MIPS Assembly Simulator](https://webmarsimulator.c
 6. [API Endpoints](#api-endpoints)
 7. [Authentication](#authentication)
 8. [Database Schema](#database-schema)
-9. [Deployment on Render](#deployment-on-render)
+9. [Deployment on Railway](#deployment-on-railway)
 10. [Security Notes](#security-notes)
 11. [Team](#team)
 
@@ -29,6 +29,14 @@ WebMARS API is a Spring Boot REST backend that powers [webmarsimulator.com](http
 - **Run logging** — record simulation runs and surface usage stats per user
 
 Built with Java 21, Spring Boot 4.0.6, PostgreSQL 18, and stateless JWT authentication.
+
+---
+
+## Live API
+
+Base URL: https://webmars-api-production.up.railway.app
+
+Deployed on Railway with PostgreSQL. Free tier — first request after inactivity may be slow.
 
 ---
 
@@ -200,27 +208,19 @@ Records individual simulation runs. References both `snippet_id` and `user_id` v
 
 ---
 
-## Deployment on Render
+## Deployment on Railway
 
 **1. Push your branch to GitHub.**
 
-**2. Create a Render Web Service**
+**2. Create a Railway project and connect your GitHub repo.**
 
-- Build command: `./mvnw clean package -DskipTests`
-- Start command: `java -jar target/webmars-api-0.0.1-SNAPSHOT.jar`
+**3. Add a PostgreSQL database service to the project.**
 
-**3. Add a Render PostgreSQL service**
+**4. Set environment variables:** `DATABASE_URL` (auto-injected by Railway), `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, `JPA_DDL=none`
 
-Link it to the web service and copy the connection details into your environment variables.
+**5. Set Root Directory to `webmars-api` in Railway service settings.**
 
-**4. Set environment variables in the Render dashboard**
-
-Set all variables from the [Environment Variables](#environment-variables) table. Use `JPA_DDL=validate` in production to prevent Hibernate from altering the schema on startup.
-
-**5. Render free-tier notes**
-
-- Web services on the free tier **sleep after 15 minutes** of inactivity. The first request after sleep may be slow.
-- Free PostgreSQL instances **expire after 90 days** and must be recreated manually.
+**6. Railway auto-deploys on every push to main.**
 
 ---
 
@@ -270,6 +270,16 @@ If you manually create a table and insert it into `flyway_schema_history` with c
 
 ```sql
 UPDATE flyway_schema_history SET checksum = <value from error log> WHERE version = '<version>';
+```
+
+### V1 migration schema mismatch
+
+The V1 migration creates a `username` column on `snippets` but the entity expects `title`. On a fresh database, run this SQL manually:
+
+```sql
+ALTER TABLE snippets RENAME COLUMN username TO title;
+ALTER TABLE snippets ALTER COLUMN title TYPE VARCHAR(255);
+ALTER TABLE snippets DROP CONSTRAINT IF EXISTS snippets_username_key;
 ```
 
 ---
