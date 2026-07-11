@@ -10,14 +10,25 @@ import java.util.List;
 
 public interface RunRepository extends JpaRepository<Run, Long> {
 
-    List<Run> findByUserIdOrderByStartedAtDesc(Long userId, Pageable pageable);
+    /**
+     * Fetch-join on snippet: RunResponse reads snippet title/id after
+     * the repository call, and with open-in-view=false a lazy proxy
+     * would throw once rows exist (the production 500 on /runs/recent).
+     */
+    @Query("""
+            SELECT r FROM Run r
+            JOIN FETCH r.snippet
+            WHERE r.user.id = :userId
+            ORDER BY r.startedAt DESC
+            """)
+    List<Run> findRecentWithSnippetByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
             SELECT r.snippet.id AS snippetId,
                    r.snippet.title AS title,
                    COUNT(r)  AS runCount,
                    MAX(r.startedAt) AS lastRun
-            FROM Run r 
+            FROM Run r
             WHERE r.user.id = :userId
             GROUP BY r.snippet.id, r.snippet.title
             ORDER BY COUNT(r) DESC
