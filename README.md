@@ -284,6 +284,15 @@ ALTER TABLE snippets DROP CONSTRAINT IF EXISTS snippets_username_key;
 
 ---
 
+## Roadmap — v1.3
+
+- **Refresh tokens** — access tokens currently last 8 hours (a
+  deliberate v1.2 tradeoff); v1.3 adds short-lived access tokens plus a
+  long-lived HttpOnly refresh token so sessions survive across days.
+  Tracked in the frontend repo's v1.3 issue list.
+
+---
+
 ## Team
 
 | Name | Role |
